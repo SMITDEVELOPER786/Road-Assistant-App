@@ -3,14 +3,14 @@ import 'package:accidentapp/Company%20Side/home.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class login extends StatefulWidget {
-  const login({super.key});
+class Companylogin extends StatefulWidget {
+  const Companylogin({super.key});
 
   @override
-  State<login> createState() => _loginState();
+  State<Companylogin> createState() => _CompanyloginState();
 }
 
-class _loginState extends State<login> {
+class _CompanyloginState extends State<Companylogin> {
   File? _image;
 
   Future<void> _pickImage() async {
@@ -22,12 +22,13 @@ class _loginState extends State<login> {
     }
   }
 
-  InputDecoration customInputDecoration(String hintText, IconData icon) {
+  InputDecoration customInputDecoration(String hintText, IconData icon,{Widget? suffixIcon}) {
     return InputDecoration(
       filled: true,
       fillColor: Colors.grey[200],
       hintText: hintText,
       prefixIcon: Icon(icon, color: Color(0xFF001E62)),
+      suffixIcon: suffixIcon,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide.none,
@@ -60,7 +61,7 @@ class _loginState extends State<login> {
             ),
             child: const Center(
               child: Text(
-                "Login",
+                "Create Profile",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -69,7 +70,14 @@ class _loginState extends State<login> {
               ),
             ),
           ),
-          GestureDetector(
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                       GestureDetector(
             onTap: _pickImage,
             child: Center(
               child: CircleAvatar(
@@ -83,24 +91,21 @@ class _loginState extends State<login> {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            "Upload Profile Picture",
-            style: TextStyle(fontSize: 14, color: Colors.black),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          const Text("Upload Profile Picture", style: TextStyle(fontSize: 14, color: Color(0xFF001E62))),
                     const SizedBox(height: 20),
                     TextField(
                       decoration: customInputDecoration("Enter your name", Icons.person),
                     ),
                     const SizedBox(height: 15),
-                    TextField(
-                      decoration: customInputDecoration("Enter your address", Icons.location_on),
+                   TextField(
+                      decoration: customInputDecoration(
+                        "Enter your address",
+                        Icons.home,
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.location_on, color: Color(0xFF001E62)),
+                          onPressed: () {},
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 15),
                     TextField(
@@ -115,7 +120,7 @@ class _loginState extends State<login> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => home(),
+                              builder: (context) => Hometab(),
                             ),
                           );
                         },
@@ -125,29 +130,12 @@ class _loginState extends State<login> {
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
                         child: const Text(
-                          "Log In",
+                          "Create",
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: const Text.rich(
-                          TextSpan(
-                            text: "Already have an account? ",
-                            style: TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold),
-                            children: [
-                              TextSpan(
-                                text: "Sign In",
-                                style: TextStyle(color: Color(0xFF001E62), fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                  
                   ],
                 ),
               ),

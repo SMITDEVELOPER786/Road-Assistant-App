@@ -1,4 +1,4 @@
-import 'package:accidentapp/Company%20Side/CompanyVerfication.dart';
+import 'package:accidentapp/Company%20Side/CompanyVerficationCode.dart';
 import 'package:accidentapp/Loginoonly.dart';
 import 'package:accidentapp/User%20Side/VerificationCode.dart';
 import 'package:flutter/material.dart';
@@ -144,8 +144,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           } else {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => Companyverfication()),
-                            );
+                              MaterialPageRoute(builder: (context) => Companyverficationcode(),
+                            ));
                           }
                         },
                         style: ElevatedButton.styleFrom(

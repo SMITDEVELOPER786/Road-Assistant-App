@@ -1,5 +1,4 @@
 import 'package:accidentapp/Company%20Side/Companylogin.dart';
-import 'package:accidentapp/Company%20Side/home.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -52,7 +51,7 @@ class _VerificationCodeState extends State<Companyverficationcode> {
         children: [
           // Gradient Header
           Container(
-            height: 280, // Adjust height of the gradient area
+            height: 120, // Adjust height of the gradient area
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -60,28 +59,15 @@ class _VerificationCodeState extends State<Companyverficationcode> {
                 colors: [Color(0xFF001E62), Colors.white],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+            child: const Center(
+              child: Text(
+                'Verification',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 24),
-                const Center(
-                  child: Text(
-                    'Verification',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           // Main Content
@@ -190,7 +176,7 @@ const Text(
                             Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => login(),
+                            builder: (context) => Companylogin(),
                           ),
                         );
                       },
