@@ -1,5 +1,6 @@
 import 'package:accidentapp/Company%20Side/CompanyVerficationCode.dart';
 import 'package:accidentapp/Company%20Side/Companylogin.dart';
+import 'package:accidentapp/Loginoonly.dart';
 import 'package:flutter/material.dart';
 
 class Companyverfication extends StatefulWidget {
@@ -36,7 +37,7 @@ class _CompanyverficationState extends State<Companyverfication> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const login(),
+                        builder: (context) => const loginOnly(),
                       ),
                     );
                   },

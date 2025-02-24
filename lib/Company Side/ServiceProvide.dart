@@ -1,3 +1,4 @@
+import 'package:accidentapp/Company%20Side/CompanyNotification.dart';
 import 'package:accidentapp/Company%20Side/Drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,14 @@ class ServiceProvide extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.notifications, color: Colors.black),
-                  onPressed: () {},
+                  onPressed: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CompanyNotificationsScreen(),
+                      ),
+                    );
+                  },
                 )
               ],
             ),
@@ -173,7 +181,7 @@ Widget _serviceCard(String title, IconData icon, bool isSelected, bool isWhiteBg
             Positioned(
               top: 8,
               right: 8,
-              child: Icon(Icons.check_circle, color: Colors.white, size: 22),
+              child: Icon(Icons.check_circle, color: Colors.grey, size: 22),
             ),
         ],
       ),

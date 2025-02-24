@@ -1,10 +1,12 @@
+import 'package:accidentapp/Company%20Side/CompanyNotification.dart';
+import 'package:accidentapp/Company%20Side/Drawer.dart';
 import 'package:flutter/material.dart';
 
 class Track extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
+      drawer: CompanyDrawer(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
@@ -16,7 +18,7 @@ class Track extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ); 
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -38,7 +40,16 @@ class Track extends StatelessWidget {
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
-              Icon(Icons.notifications, color: Colors.black),
+              IconButton(
+                onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CompanyNotificationsScreen(),
+                      ),
+                    );
+                },
+                icon: Icon(Icons.notifications, color: Colors.black)),
         ],
       ),
     );

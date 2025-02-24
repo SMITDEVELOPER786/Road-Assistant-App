@@ -7,114 +7,116 @@ class ClientIssueDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // Background similar to the image
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[Color(0xFF001E62), Colors.white])),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Stack(alignment: Alignment.center, children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Builder(
-                      builder: (context) => IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
+      body: SingleChildScrollView( // ✅ Added ScrollView to prevent overflow
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[Color(0xFF001E62), Colors.white])),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Stack(alignment: Alignment.center, children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.notifications),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    top: 58,
+                    child: Text(
+                      "Client Issue Details",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.notifications), // Another Icon Button
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Positioned(
-                  top: 58,
-                  child: Text(
-                    "Client Issue Details",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
                   ),
-                ),
-              ]),
-            ),
-          ),
-          // Vehicle Details Card
-          _buildCard(
-            title: "Vehicle Details",
-            children: [
-              _buildDetailRow("Vehicle Owner", "Mr. Weslewski"),
-              _buildDetailRow("Vehicle Type", "Car"),
-              _buildDetailRow("Vehicle Name", "Toyota"),
-              _buildDetailRow("Vehicle Color", "Petrol"),
-            ],
-          ),
-
-          SizedBox(height: 16),
-
-          // Client Service Request Card
-          _buildCard(
-            title: "Client Service Request",
-            children: [
-              _buildDetailRow("Client Issue Type", "Flat Tyre"),
-              _buildDetailRow("Client Location", "Locate Client", isLink: true),
-              _buildDetailRow("Client Contact", "02....")
-            ],
-          ),
-
-          SizedBox(height: 16),
-
-          // Client Added Text Card
-          _buildCard(
-            title: "Client Added Text",
-            children: [
-              Text(
-                "Description :",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600),
+                ]),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "A car service is a routine check-up and maintenance process to ensure it's safe "
-                  "and running smoothly. It involves a qualified mechanic inspecting the car, "
-                  "checking its systems, and making adjustments or replacements as needed.",
+            ),
+
+            // Vehicle Details Card
+            _buildCard(
+              title: "Vehicle Details",
+              children: [
+                _buildDetailRow("Vehicle Owner", "Mr. Weslewski"),
+                _buildDetailRow("Vehicle Type", "Car"),
+                _buildDetailRow("Vehicle Name", "Toyota"),
+                _buildDetailRow("Vehicle Color", "Petrol"),
+              ],
+            ),
+
+            SizedBox(height: 16),
+
+            // Client Service Request Card
+            _buildCard(
+              title: "Client Service Request",
+              children: [
+                _buildDetailRow("Client Issue Type", "Flat Tyre"),
+                _buildDetailRow("Client Location", "Locate Client", isLink: true),
+                _buildDetailRow("Client Contact", "02....")
+              ],
+            ),
+
+            SizedBox(height: 16),
+
+            // Client Added Text Card
+            _buildCard(
+              title: "Client Added Text",
+              children: [
+                Text(
+                  "Description :",
                   style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
-                      fontWeight: FontWeight.w500),
+                      fontWeight: FontWeight.w600),
                 ),
-              ),
-            ],
-          ), //Buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildButton("Decline", Colors.white, Color(0xFF001E62)),
-                _buildButton("Accept", Color(0xFF001E62), Colors.white),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "A car service is a routine check-up and maintenance process to ensure it's safe "
+                    "and running smoothly. It involves a qualified mechanic inspecting the car, "
+                    "checking its systems, and making adjustments or replacements as needed.",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
+
+            // Buttons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildButton("Decline", Colors.white, Color(0xFF001E62)),
+                  _buildButton("Accept", Color(0xFF001E62), Colors.white),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -141,7 +143,7 @@ class ClientIssueDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8),
-                  ...children, // Expands the list of children inside the card
+                  ...children,
                 ],
               ),
             ),

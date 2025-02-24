@@ -1,15 +1,11 @@
-import 'package:accidentapp/User Side/HelpSupport.dart';
-import 'package:accidentapp/User Side/HistoryService.dart';
-import 'package:accidentapp/User Side/Notification.dart';
-import 'package:accidentapp/User Side/Request/RequestService.dart';
-import 'package:accidentapp/User Side/home_screen.dart';
+import 'package:accidentapp/Company%20Side/CompanyNotification.dart';
+import 'package:accidentapp/Company%20Side/Tabbar.dart';
+import 'package:accidentapp/User%20Side/HelpSupport.dart';
 import 'package:accidentapp/User%20Side/Register.dart';
-import 'package:accidentapp/User%20Side/Settings.dart';
 import 'package:flutter/material.dart';
 
 class CompanyDrawer extends StatelessWidget {
   const CompanyDrawer({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -21,28 +17,28 @@ class CompanyDrawer extends StatelessWidget {
             // Header Section
             Container(
               padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF001E62),
+              decoration: const BoxDecoration(
+                color: Color(0xFF001E62),
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 50, color: Color(0xFF001E62)),
+                    backgroundImage: AssetImage('assets/profile_image.png'),
                   ),
                   const SizedBox(height: 10),
-                  Text(
+                  const Text(
                     'jack',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'jack@yupmail.com',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),
@@ -57,62 +53,62 @@ class CompanyDrawer extends StatelessWidget {
                 children: [
                   buildMenuItem(
                     context,
-                    icon: Icons.dashboard,
+                    iconPath: 'assets/dashboard.png',
                     title: "Dashboard",
-                    destination: HomeScreen(),
+                    destination: Hometab(),
                   ),
                   buildMenuItem(
                     context,
-                    icon: Icons.location_on,
+                    iconPath: 'assets/home2.jpg',
                     title: "Add/Edit Services",
-                    destination: HomeScreen(),
+                    destination: Hometab(),
                   ),
                   buildMenuItem(
                     context,
-                    icon: Icons.build,
-                    title: "Service Request",
-                    destination: HomeScreen(),
+                    iconPath: 'assets/service_request.png',
+                    title: "Service Requests",
+                    destination: Hometab(),
                   ),
                   buildMenuItem(
                     context,
-                    icon: Icons.notifications,
+                    iconPath: 'assets/client_issue.png',
                     title: "Client Issue Details",
-                    destination: HomeScreen(),
+                    destination: Hometab(),
                   ),
                   buildMenuItem(
                     context,
-                    icon: Icons.person,
+                    iconPath: 'assets/manage_loc.png',
                     title: "Manage Locations",
-                    destination: HomeScreen(),
+                    destination: Hometab(),
                   ),
                   buildMenuItem(
                     context,
-                    icon: Icons.help_outline,
+                    iconPath: 'assets/service_his.png',
                     title: "Service History",
-                    destination: HomeScreen(),
+                    destination: Hometab(),
                   ),
-                    buildMenuItem(
+                  buildMenuItem(
                     context,
-                    icon: Icons.help_outline,
+                    iconPath: 'assets/notification2.png',
                     title: "Notifications",
-                    destination: HomeScreen(),
+                    destination: CompanyNotificationsScreen(),
                   ),
-                    buildMenuItem(
+                  buildMenuItem(
                     context,
-                    icon: Icons.help_outline,
+                    iconPath: 'assets/account_set.png',
                     title: "Account Settings",
-                    destination: HomeScreen(),
+                    destination: Hometab(),
                   ),
-                    buildMenuItem(
+                  buildMenuItem(
                     context,
-                    icon: Icons.help_outline,
+                    iconPath: 'assets/HelpSupport.png',
                     title: "Help & Support",
-                    destination: HomeScreen(),
+                    destination: HelpSupportScreen(),
                   ),
                   ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.logout, color: const Color(0xFF001E62)),
+                      child: Image.asset('assets/log-out.png', width: 24),
                     ),
                     title: const Text(
                       "Log Out",
@@ -140,24 +136,24 @@ class CompanyDrawer extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Center(child: Text("Logout")),
-          content: Text("Are you sure you want to logout?"),
+          title: const Center(child: Text("Logout")),
+          content: const Text("Are you sure you want to logout?"),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
-              child: Text("Cancel",style: TextStyle(color:  Color(0xFF001E62)),),
+              child: const Text("Cancel", style: TextStyle(color: Color(0xFF001E62))),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => RegistrationScreen()),
                 );
               },
-              child: Text("Yes, Logout", style: TextStyle(color:  Color(0xFF001E62))),
+              child: const Text("Yes, Logout", style: TextStyle(color: Color(0xFF001E62))),
             ),
           ],
         );
@@ -167,14 +163,14 @@ class CompanyDrawer extends StatelessWidget {
 
   Widget buildMenuItem(
     BuildContext context, {
-    required IconData icon,
+    required String iconPath,
     required String title,
     required Widget destination,
   }) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Colors.white,
-        child: Icon(icon, color: const Color(0xFF001E62)),
+        child: Image.asset(iconPath, width: 24),
       ),
       title: Text(
         title,

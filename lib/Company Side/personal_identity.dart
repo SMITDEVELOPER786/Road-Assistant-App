@@ -163,7 +163,10 @@ class _PersonalIdentityState extends State<PersonalIdentity> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                            Navigator.pop(context);
+                       
+                    },
                     child: Icon(
                       Icons.arrow_back_ios_new,
                       color: Colors.grey[700],

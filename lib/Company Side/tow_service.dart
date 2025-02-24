@@ -1,4 +1,5 @@
 import 'package:accidentapp/Company Side/BuildServiceCard.dart';
+import 'package:accidentapp/Company%20Side/CompanyNotification.dart';
 import 'package:accidentapp/Company%20Side/Drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,14 @@ class TowServiceScreen extends StatelessWidget {
                   ),
                   IconButton(
                     icon: Icon(Icons.notifications), // Another Icon Button
-                    onPressed: () {},
+                    onPressed: () {
+                       Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CompanyNotificationsScreen(),
+                      ),
+                    );
+                    },
                   ),
                 ],
               ),

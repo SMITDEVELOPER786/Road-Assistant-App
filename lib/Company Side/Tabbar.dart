@@ -10,7 +10,7 @@ class Hometab extends StatefulWidget {
 }
 
 class _HometabState extends State<Hometab> {
-  int _selectedIndex = 1; // Default selected index
+  int _selectedIndex = 0; // Default selected index
 
   final List<Widget> _pages = [
     TowServiceScreen(),
