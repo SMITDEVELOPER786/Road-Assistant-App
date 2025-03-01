@@ -77,14 +77,17 @@ class _SettingScreenState extends State<SettingScreen> {
                           fontSize: 18,
                           color: Color(0xFF001E62)),
                     ),
-                    trailing: Switch(
-                      activeColor: Color(0xFF001E62),
-                      value: isNotificationsEnabled,
-                      onChanged: (value) {
-                        setState(() {
-                          isNotificationsEnabled = value;
-                        });
-                      },
+                    trailing: Transform.scale(
+                      scale: 0.8, // Reduced switch size
+                      child: Switch(
+                        activeColor: Color(0xFF001E62),
+                        value: isNotificationsEnabled,
+                        onChanged: (value) {
+                          setState(() {
+                            isNotificationsEnabled = value;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),

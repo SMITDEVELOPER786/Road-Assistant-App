@@ -214,31 +214,32 @@ class BuildServiceCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>  HomeScreen(),
-                      ),
-                    );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF001E62),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-              ),
-              child: const Text(
-                "Confirm",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+          ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(),
+      ),
+    );
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Color(0xFF001E62),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20), // Increased padding
+  ),
+  child: const Text(
+    "Send Request",
+    style: TextStyle(
+      fontSize: 14, // Increased font size
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
+  ),
+),
+
           ],
         ),
       ),

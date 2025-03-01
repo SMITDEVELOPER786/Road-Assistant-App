@@ -164,24 +164,22 @@ class HomeScreen extends StatelessWidget {
             // SizedBox(height: 20), // Space before Book a Service
             // Book a Service Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Text(
-                'Book a Service',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            // SizedBox(height: 10),
-            Padding(
               padding: const EdgeInsets.all(20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ServiceCard(icon: Icons.car_repair, title: 'Vehicle Service'),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  ServiceCard(icon: Icons.local_shipping, title: 'RSA Service'),
                 ],
+              ),
+            ),
+            // SizedBox(height: 10),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Text(
+                  'Book a Service',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             // SizedBox(
