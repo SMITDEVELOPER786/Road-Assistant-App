@@ -1,4 +1,3 @@
-import 'package:accidentapp/User Side/Register.dart';
 import 'package:accidentapp/User%20Side/VerificationCodeForget.dart';
 import 'package:flutter/material.dart';
 class VerificationScreen extends StatelessWidget {
