@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:accidentapp/Company%20Side/CompanyVerficationCode.dart';
 import 'package:accidentapp/Loginoonly.dart';
 import 'package:accidentapp/User%20Side/VerificationCode.dart';
-import 'package:flutter/material.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -11,50 +12,78 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   String userType = "User";
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
-  InputDecoration customInputDecoration(String hintText, IconData icon, {bool isPassword = false, VoidCallback? toggleVisibility}) {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.grey[200],
-      hintText: hintText,
-      prefixIcon: Icon(icon, color: Color(0xFF001E62)),
-      suffixIcon: isPassword
-          ? IconButton(
-              icon: Icon(
-                toggleVisibility == _togglePasswordVisibility ? (_obscurePassword ? Icons.visibility_off : Icons.visibility) : (_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
-                color: Colors.black54,
-              ),
-              onPressed: toggleVisibility,
-            )
-          : null,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Color(0xFF001E62)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Color(0xFF001E62), width: 2),
-      ),
-    );
+  bool _isValidPassword(String password) {
+    final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$');
+    return regex.hasMatch(password);
   }
 
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscurePassword = !_obscurePassword;
-    });
-  }
+  void _register() async {
+    if (_emailController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Enter Email")));
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Enter Password")));
+      return;
+    }
+    if (_confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Confirm your Password")));
+      return;
+    }
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Passwords do not match!")));
+      return;
+    }
+    if (!_isValidPassword(_passwordController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            "Password must be at least 8 characters long, include at least one lowercase letter, one uppercase letter, and one special character."),
+      ));
+      return;
+    }
 
-  void _toggleConfirmPasswordVisibility() {
     setState(() {
-      _obscureConfirmPassword = !_obscureConfirmPassword;
+      _isLoading = true;
     });
+
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration Successful!")));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              userType == "User" ? VerificationCode() : Companyverficationcode(),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Registration failed: ${e.toString()}")));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -85,106 +114,134 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    TextField(
-                      decoration: customInputDecoration("Enter your email", Icons.email),
-                      keyboardType: TextInputType.emailAddress,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: "Enter your email",
+                      prefixIcon: Icon(Icons.email, color: Color(0xFF001E62)),
                     ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      obscureText: _obscurePassword,
-                      decoration: customInputDecoration("Enter your password", Icons.lock, isPassword: true, toggleVisibility: _togglePasswordVisibility),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      obscureText: _obscureConfirmPassword,
-                      decoration: customInputDecoration("Confirm your password", Icons.lock, isPassword: true, toggleVisibility: _toggleConfirmPasswordVisibility),
-                    ),
-                    const SizedBox(height: 15),
-                    const Text("User Type", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                    Row(
-                      children: [
-                        Radio(
-                          value: "User",
-                          groupValue: userType,
-                          onChanged: (value) {
-                            setState(() {
-                              userType = value.toString();
-                            });
-                          },
+                    keyboardType: TextInputType.emailAddress,
+                    enabled: !_isLoading,
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      hintText: "Enter your password",
+                      prefixIcon: Icon(Icons.lock, color: Color(0xFF001E62)),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Color(0xFF001E62),
                         ),
-                        const Text("User"),
-                        Radio(
-                          value: "Company",
-                          groupValue: userType,
-                          onChanged: (value) {
-                            setState(() {
-                              userType = value.toString();
-                            });
-                          },
-                        ),
-                        const Text("Company"),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
                         onPressed: () {
-                          if (userType == "User") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => VerificationCode()),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Companyverficationcode(),
-                            ));
-                          }
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF001E62),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                        child: const Text(
-                          "Registration",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const loginOnly()),
-                          );
-                        },
-                        child: const Text.rich(
-                          TextSpan(
-                            text: "Already have an account? ",
-                            style: TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold),
-                            children: [
-                              TextSpan(
-                                text: "Sign In",
-                                style: TextStyle(color: Color(0xFF001E62), fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+                    enabled: !_isLoading,
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    decoration: InputDecoration(
+                      hintText: "Confirm your password",
+                      prefixIcon: Icon(Icons.lock, color: Color(0xFF001E62)),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Color(0xFF001E62),
                         ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                       ),
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+                    enabled: !_isLoading,
+                  ),
+                  const SizedBox(height: 15),
+                  const Text("User Type"),
+                  Row(
+                    children: [
+                      Radio(
+                        value: "User",
+                        groupValue: userType,
+                        onChanged: _isLoading
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  userType = value.toString();
+                                });
+                              },
+                      ),
+                      const Text("User"),
+                      Radio(
+                        value: "Company",
+                        groupValue: userType,
+                        onChanged: _isLoading
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  userType = value.toString();
+                                });
+                              },
+                      ),
+                      const Text("Company"),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _register,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF001E62),
+                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              "Register",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Center(
+                    child: GestureDetector(
+                      onTap: _isLoading
+                          ? null
+                          : () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const loginOnly(),
+                                ),
+                              );
+                            },
+                      child: const Text("Already have an account? Sign In"),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

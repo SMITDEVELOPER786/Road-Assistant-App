@@ -1,6 +1,57 @@
+import 'package:accidentapp/Loginoonly.dart';
 import 'package:accidentapp/User%20Side/VerificationCodeForget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-class VerificationScreen extends StatelessWidget {
+
+class VerificationScreen extends StatefulWidget {
+  @override
+  _VerificationScreenState createState() => _VerificationScreenState();
+}
+
+class _VerificationScreenState extends State<VerificationScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  void _resetPassword() async {
+    String email = _emailController.text.trim();
+    // Validate if email is empty
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your registered email")),
+      );
+      return;
+    }
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password reset email sent! Check your inbox."),
+          backgroundColor: Colors.green,
+        ),
+      );
+      // Navigate to Verification Code screen if needed
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const loginOnly()),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("No account found with this email."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error: ${e.message}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -9,7 +60,7 @@ class VerificationScreen extends StatelessWidget {
         children: [
           // Gradient Header
           Container(
-            height: 120, // Adjusted to ensure the gradient ends correctly
+            height: 120,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -35,18 +86,18 @@ class VerificationScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Image directly below the gradient, no extra space
+                  // Image
                   ClipRRect(
                     child: Align(
                       alignment: Alignment.topCenter,
                       child: Image.asset(
-                        'assets/verificationImage.png', // Replace with your asset path
-                        height: 180, // Adjust as needed
+                        'assets/verificationImage.png',
+                        height: 180,
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16), // Reduced spacing after the image
+                  const SizedBox(height: 16),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
@@ -60,7 +111,7 @@ class VerificationScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 4), // Reduced spacing here
+                        SizedBox(height: 4),
                         Text(
                           "Enter your email and we'll",
                           style: TextStyle(
@@ -69,7 +120,7 @@ class VerificationScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 4), // Reduced spacing
+                        SizedBox(height: 4),
                         Text(
                           "send you a verification code.",
                           style: TextStyle(
@@ -78,7 +129,7 @@ class VerificationScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 12), // Reduced spacing before "Email"
+                        SizedBox(height: 12),
                         Text(
                           "Email",
                           style: TextStyle(
@@ -88,36 +139,34 @@ class VerificationScreen extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 8),
-                        TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF001E62)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF001E62)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF001E62)),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20), // Slight spacing before button
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF001E62)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF001E62)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF001E62)),
+                        ),
+                        hintText: "Enter your registered email",
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const VerificationCodeForget(),
-                            ),
-                          );
-                        },
+                        onPressed: _resetPassword, // Call the reset function
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF001E62),
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -126,13 +175,13 @@ class VerificationScreen extends StatelessWidget {
                           ),
                         ),
                         child: const Text(
-                          'Next',
+                          'Send Reset Email',
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16), // Slight spacing at the end
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -142,4 +191,3 @@ class VerificationScreen extends StatelessWidget {
     );
   }
 }
-
