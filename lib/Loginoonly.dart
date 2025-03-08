@@ -16,7 +16,6 @@ class _LoginOnlyState extends State<loginOnly> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   void _login() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -124,6 +123,24 @@ class _LoginOnlyState extends State<loginOnly> {
                       enabled: !_isLoading,
                     ),
                     const SizedBox(height: 30),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VerificationScreen()),
+                          );
+                        },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                              color: Color(0xFF001E62),
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
