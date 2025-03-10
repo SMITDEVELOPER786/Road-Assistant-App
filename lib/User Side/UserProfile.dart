@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:accidentapp/User%20Side/home_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({super.key});
@@ -20,14 +23,41 @@ class _UserProfileState extends State<UserProfile> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
   bool _isLoading = false; // Loading indicator
-
   Future<void> _pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
       setState(() {
-        _image = File(pickedFile.path);
+        _image = imageFile;
       });
+      Future<String?> _uploadImageToCloudinary(File imageFile) async {
+        final cloudinaryUrl =
+            "https://api.cloudinary.com/v1_1/dgbjqewiy/upload";
+        final request = http.MultipartRequest("POST", Uri.parse(cloudinaryUrl))
+          ..fields['upload_preset'] =
+              "imageuplaod" // Set in Cloudinary settings
+          ..files
+              .add(await http.MultipartFile.fromPath('file', imageFile.path));
+        final response = await request.send();
+        if (response.statusCode == 200) {
+          final responseData =
+              json.decode(await response.stream.bytesToString());
+          return responseData['secure_url']; // Cloudinary image URL
+        } else {
+          return null;
+        }
+      }
+
+      // Upload to Cloudinary
+      String? imageUrl = await _uploadImageToCloudinary(imageFile);
+      if (imageUrl != null) {
+        print("Image uploaded: $imageUrl");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Image upload failed!")),
+        );
+      }
     }
   }
 
@@ -55,6 +85,20 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> _storeUserData() async {
+    if (_ageController.text.isEmpty ||
+        int.tryParse(_ageController.text) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid age")),
+      );
+      return;
+    }
+
+    if (_contactController.text.length != 11) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Contact number must be 11 digits")),
+      );
+      return;
+    }
     if (_nameController.text.isEmpty ||
         _addressController.text.isEmpty ||
         _ageController.text.isEmpty ||
@@ -72,12 +116,19 @@ class _UserProfileState extends State<UserProfile> {
 
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
+      String? imageUrl;
+
+      if (_image != null) {
+        print("Image uploaded: $imageUrl");
+        // imageUrl = await _uploadImageToCloudinary(_image!);
+      }
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'name': _nameController.text.trim(),
         'address': _addressController.text.trim(),
         'age': _ageController.text.trim(),
         'gender': _selectedGender,
         'contact': _contactController.text.trim(),
+        'profileImage': imageUrl ?? "", // Store image URL
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -178,6 +229,7 @@ class _UserProfileState extends State<UserProfile> {
                       decoration: customInputDecoration(
                           "Enter your age", Icons.calendar_today),
                       keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                     const SizedBox(height: 15),
                     DropdownButtonFormField<String>(
@@ -202,6 +254,11 @@ class _UserProfileState extends State<UserProfile> {
                       decoration: customInputDecoration(
                           "Enter your contact number", Icons.phone),
                       keyboardType: TextInputType.phone,
+                      maxLength: 11,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(11),
+                      ],
                     ),
                     const SizedBox(height: 30),
                     SizedBox(

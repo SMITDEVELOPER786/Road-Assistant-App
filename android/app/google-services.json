@@ -6,9 +6,9 @@
   },
   "client": [
     {
-      "client_info": {
-        "mobilesdk_app_id": "1:468021243103:android:a84dd24dbe1775f8474d6a",
-        "android_client_info": {
+          "client_info": {
+          "mobilesdk_app_id": "1:468021243103:android:a84dd24dbe1775f8474d6a",
+          "android_client_info": {
           "package_name": "com.example.accidentapp"
         }
       },

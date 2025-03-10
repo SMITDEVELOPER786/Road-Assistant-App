@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:accidentapp/User%20Side/UserProfile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class VerificationCode extends StatefulWidget {
@@ -43,6 +44,35 @@ class _VerificationCodeState extends State<VerificationCode> {
     super.dispose();
   }
 
+  void _checkEmailVerification(BuildContext context) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    await user?.reload();
+    if (user != null && user.emailVerified) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => UserProfile()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please verify your email first.")),
+      );
+    }
+  }
+
+  void _resendVerificationEmail() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null && !user.emailVerified) {
+      setState(() {
+        _secondsRemaining = 300;
+        _startTimer();
+      });
+      await user.sendEmailVerification();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Verification email sent again!")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,16 +110,16 @@ class _VerificationCodeState extends State<VerificationCode> {
                   const Text(
                     'Enter your',
                     style: TextStyle(
-                       fontSize: 28,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                        SizedBox(height: 4), // Reduced spacing here
-const Text(
+                  SizedBox(height: 4), // Reduced spacing here
+                  const Text(
                     'Verification Code',
                     style: TextStyle(
-                       fontSize: 28,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -125,42 +155,37 @@ const Text(
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'We sent a verification code to your email',
+                    ' sent a verification code to your email',
                     style: TextStyle(fontSize: 14, color: Colors.black),
                   ),
-                    Row(
-                      children: [
-                        const Text(
+                  Row(
+                    children: [
+                      const Text(
                         'abc......@gmail.com.',
                         style: TextStyle(fontSize: 14, color: Colors.grey),
-                                          ),
-     const Text(
+                      ),
+                      const Text(
                         'You can check your',
                         style: TextStyle(fontSize: 14, color: Colors.black),
-                                          ),
-                      ],
-                    ),
- const Text(
-                        'inbox.',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                                          ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    'inbox.',
+                    style: TextStyle(fontSize: 14, color: Colors.black),
+                  ),
                   const SizedBox(height: 16),
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _secondsRemaining = 300;
-                        _startTimer();
-                      });
-                    },
+                    onTap: _resendVerificationEmail,
                     child: const Text(
-                      'I don\'t received the code? Send again',
+                      'Didn’t receive the code? Send again',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                        decoration: TextDecoration.underline,
-                      ),
+                          fontSize: 14,
+                          color: Colors.grey,
+                          decoration: TextDecoration.underline),
                     ),
                   ),
+
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
@@ -173,12 +198,7 @@ const Text(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       onPressed: () {
-                            Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UserProfile(),
-                          ),
-                        );
+                        _checkEmailVerification(context);
                       },
                       child: const Text(
                         'Verify',

@@ -44,8 +44,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return;
     }
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Passwords do not match!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Passwords do not match!")));
       return;
     }
     if (!_isValidPassword(_passwordController.text)) {
@@ -61,19 +61,42 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
 
     try {
-      await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration Successful!")));
+      // Send Email Verification
+      await userCredential.user?.sendEmailVerification();
 
+      // Show verification dialog
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Verify Your Email'),
+          content: const Text(
+              'A verification email has been sent to your email. Please verify before logging in.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content:
+              Text("📨 Registeration Successfull! Check your email inbox.")));
+      // Navigate to Verification Screen (optional)
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              userType == "User" ? VerificationCode() : Companyverficationcode(),
+          builder: (context) => userType == "User"
+              ? VerificationCode()
+              : Companyverficationcode(),
         ),
       );
     } catch (e) {
