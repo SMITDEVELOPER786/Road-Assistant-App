@@ -9,25 +9,23 @@ const publicKey = 'zpls0evSRmr6bomCn'; // Replace with your EmailJS public key
 // Function to generate a 6-digit OTP
 String generateOTP() {
   Random random = Random();
-  int otp = 100000 + random.nextInt(900000 - 100000); // Ensures OTP is 6 digits
+  int otp = 100000 + random.nextInt(900000 - 100000); // 6-digit OTP
   return otp.toString();
 }
 
 // Function to send OTP via Email using REST API
-Future<bool> sendOTP(String recipientEmail) async {
+Future<bool> sendOTP(String recipientEmail, String generatedOtp) async {
   String otp = generateOTP();
-  print("Generated OTP: $otp");
-
+  print("Generated OTP: $generatedOtp");
   final Map<String, dynamic> emailData = {
     'service_id': serviceID,
     'template_id': templateID,
-    'user_id': publicKey, // Use publicKey here
+    'user_id': publicKey,
     'template_params': {
-      'to_email': recipientEmail, // ✅ Matches {{to_email}} in EmailJS template
-      'otp': otp, // ✅ Matches {{otp}} in EmailJS template
+      'to_email': recipientEmail, // ✅ Send email to user
+      'otp': generatedOtp, // ✅ Use the same OTP generated
     }
   };
-
   try {
     final response = await http.post(
       Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),

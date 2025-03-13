@@ -80,16 +80,16 @@ class _VerificationCodeForgetState extends State<VerificationCodeForget> {
                   const Text(
                     'Enter your',
                     style: TextStyle(
-                       fontSize: 28,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
-                        SizedBox(height: 4), // Reduced spacing here
-const Text(
+                  SizedBox(height: 4), // Reduced spacing here
+                  const Text(
                     'Verification Code',
                     style: TextStyle(
-                       fontSize: 28,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -128,22 +128,22 @@ const Text(
                     'We sent a verification code to your email',
                     style: TextStyle(fontSize: 14, color: Colors.black),
                   ),
-                    Row(
-                      children: [
-                        const Text(
+                  Row(
+                    children: [
+                      const Text(
                         'abc......@gmail.com.',
                         style: TextStyle(fontSize: 14, color: Colors.grey),
-                                          ),
-     const Text(
+                      ),
+                      const Text(
                         'You can check your',
                         style: TextStyle(fontSize: 14, color: Colors.black),
-                                          ),
-                      ],
-                    ),
- const Text(
-                        'inbox.',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                                          ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    'inbox.',
+                    style: TextStyle(fontSize: 14, color: Colors.black),
+                  ),
                   const SizedBox(height: 16),
                   GestureDetector(
                     onTap: () {
@@ -173,7 +173,7 @@ const Text(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       onPressed: () {
-                            Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => HomeScreen(),

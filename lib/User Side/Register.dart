@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:accidentapp/Company%20Side/CompanyVerficationCode.dart';
 import 'package:accidentapp/Loginoonly.dart';
 import 'package:accidentapp/User%20Side/VerificationCode.dart';
+import 'package:accidentapp/Email_Verification.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
-
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
@@ -28,30 +28,43 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void _register() async {
-    if (_emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Enter Email")));
+    String recipientEmail = _emailController.text.trim();
+
+    if (recipientEmail.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Enter Email"),
+        backgroundColor: Colors.red,
+      ));
       return;
     }
+
     if (_passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Enter Password")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Enter  your password"),
+        backgroundColor: Colors.red,
+      ));
       return;
     }
     if (_confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Confirm your Password")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Enter your Confirm password"),
+        backgroundColor: Colors.red,
+      ));
       return;
     }
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords do not match!")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Passwords do not match!"),
+        backgroundColor: Colors.red,
+      ));
       return;
     }
+
     if (!_isValidPassword(_passwordController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
-            "Password must be at least 8 characters long, include at least one lowercase letter, one uppercase letter, and one special character."),
+            "Password must have at least 8 characters, one uppercase, one lowercase, and one special character."),
+        backgroundColor: Colors.red,
       ));
       return;
     }
@@ -63,45 +76,51 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
+        email: recipientEmail,
         password: _passwordController.text.trim(),
       );
+      // Generate OTP and send it
+      String generatedOtp = generateOTP(); // ✅ Generate OTP once
 
-      // Send Email Verification
-      await userCredential.user?.sendEmailVerification();
+      bool otpSent =
+          await sendOTP(recipientEmail, generatedOtp); // ✅ Send the same OTP
 
-      // Show verification dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Verify Your Email'),
-          content: const Text(
-              'A verification email has been sent to your email. Please verify before logging in.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
+      if (otpSent) {
+        print("Stored OTP for verification: $generatedOtp"); // ✅ Debugging
+
+        // Show success message before navigating
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                "Registration successful! Check your email inbox for OTP."),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3), // Show for 3 seconds
+          ),
+        );
+
+        // Navigate to OTP verification after a short delay to let the user see the message
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  VerificationCode(correctOTP: generatedOtp), // ✅ Same OTP used
             ),
-          ],
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content:
-              Text("📨 Registeration Successfull! Check your email inbox.")));
-      // Navigate to Verification Screen (optional)
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => userType == "User"
-              ? VerificationCode()
-              : Companyverficationcode(),
-        ),
-      );
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to send OTP. Try again!"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration failed: ${e.toString()}")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Registration failed: ${e.toString()}"),
+        backgroundColor: Colors.red,
+      ));
     } finally {
       setState(() {
         _isLoading = false;
@@ -179,7 +198,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
-                      hintText: "Confirm your password",
+                      hintText: "Enter your Confirm password",
                       prefixIcon: Icon(Icons.lock, color: Color(0xFF001E62)),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -248,7 +267,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Center(
                     child: GestureDetector(
                       onTap: _isLoading

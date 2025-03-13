@@ -22,19 +22,23 @@ class _LoginOnlyState extends State<loginOnly> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter your email and password")),
+        const SnackBar(
+          content: Text("Please enter your email and password"),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
-
     setState(() {
       _isLoading = true;
     });
-
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login Successful!")),
+        const SnackBar(
+          content: Text("Login Successful!"),
+          backgroundColor: Colors.green,
+        ),
       );
       Navigator.pushReplacement(
         context,

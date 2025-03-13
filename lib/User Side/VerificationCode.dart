@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:accidentapp/User%20Side/UserProfile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:accidentapp/User%20Side/UserProfile.dart';
 
 class VerificationCode extends StatefulWidget {
-  const VerificationCode({super.key});
+  final String correctOTP;
+  VerificationCode({super.key, required this.correctOTP});
 
   @override
   State<VerificationCode> createState() => _VerificationCodeState();
@@ -12,8 +12,8 @@ class VerificationCode extends StatefulWidget {
 
 class _VerificationCodeState extends State<VerificationCode> {
   late Timer _timer;
-  int _secondsRemaining = 300; // 5 minutes
-
+  int _secondsRemaining = 300;
+  final TextEditingController _otpController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -32,43 +32,43 @@ class _VerificationCodeState extends State<VerificationCode> {
     });
   }
 
-  String _formatTime(int seconds) {
-    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
-    final secs = (seconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$secs';
-  }
-
   @override
   void dispose() {
     _timer.cancel();
+    _otpController.dispose();
     super.dispose();
   }
 
-  void _checkEmailVerification(BuildContext context) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    await user?.reload();
-    if (user != null && user.emailVerified) {
+  void _verifyOTP() async {
+    String enteredOTP = _otpController.text.trim();
+    print("Entered OTP: $enteredOTP");
+    print("Correct OTP: ${widget.correctOTP}");
+
+    if (enteredOTP == widget.correctOTP) {
+      // Show success message before navigating
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("OTP verified successfully! Redirecting..."),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2), // Show for 2 seconds
+        ),
+      );
+      // Wait for the snackbar to show before navigating
+      await Future.delayed(Duration(seconds: 2));
+
+      // Navigate to the profile screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => UserProfile()),
       );
     } else {
+      // Show error message for incorrect OTP
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please verify your email first.")),
-      );
-    }
-  }
-
-  void _resendVerificationEmail() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null && !user.emailVerified) {
-      setState(() {
-        _secondsRemaining = 300;
-        _startTimer();
-      });
-      await user.sendEmailVerification();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Verification email sent again!")),
+        SnackBar(
+          content: Text("Incorrect OTP. Please try again."),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
       );
     }
   }
@@ -79,9 +79,8 @@ class _VerificationCodeState extends State<VerificationCode> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Gradient Header
           Container(
-            height: 120, // Adjust height of the gradient area
+            height: 120,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -93,99 +92,37 @@ class _VerificationCodeState extends State<VerificationCode> {
               child: Text(
                 'Verification',
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
             ),
           ),
-          // Main Content
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Enter your',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 4), // Reduced spacing here
-                  const Text(
-                    'Verification Code',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
                   const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(6, (index) {
-                      return SizedBox(
-                        width: 40,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          maxLength: 1,
-                          style: const TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                            counterText: '',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                  TextField(
+                    controller: _otpController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    style: const TextStyle(fontSize: 20),
+                    decoration: InputDecoration(
+                      counterText: '',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      hintText: 'Enter OTP',
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _formatTime(_secondsRemaining),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
+                    "Time Remaining: ${(_secondsRemaining ~/ 60).toString().padLeft(2, '0')}:${(_secondsRemaining % 60).toString().padLeft(2, '0')}",
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    ' sent a verification code to your email',
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        'abc......@gmail.com.',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                      const Text(
-                        'You can check your',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                      ),
-                    ],
-                  ),
-                  const Text(
-                    'inbox.',
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: _resendVerificationEmail,
-                    child: const Text(
-                      'Didn’t receive the code? Send again',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                          decoration: TextDecoration.underline),
-                    ),
-                  ),
-
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
@@ -193,20 +130,16 @@ class _VerificationCodeState extends State<VerificationCode> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF001E62),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                            borderRadius: BorderRadius.circular(8)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onPressed: () {
-                        _checkEmailVerification(context);
-                      },
+                      onPressed: _verifyOTP,
                       child: const Text(
                         'Verify',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),
