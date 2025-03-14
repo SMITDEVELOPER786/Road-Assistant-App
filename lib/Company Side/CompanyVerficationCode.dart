@@ -1,18 +1,19 @@
-import 'package:accidentapp/Company%20Side/Companylogin.dart';
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:accidentapp/User%20Side/UserProfile.dart';
+import 'CompanyProfile.dart';
 
 class Companyverficationcode extends StatefulWidget {
-  const Companyverficationcode({super.key});
-
+  final String correctOTP;
+  Companyverficationcode({super.key, required this.correctOTP});
   @override
   State<Companyverficationcode> createState() => _VerificationCodeState();
 }
 
 class _VerificationCodeState extends State<Companyverficationcode> {
   late Timer _timer;
-  int _secondsRemaining = 300; // 5 minutes
-
+  int _secondsRemaining = 300;
+  final TextEditingController _otpController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -31,16 +32,44 @@ class _VerificationCodeState extends State<Companyverficationcode> {
     });
   }
 
-  String _formatTime(int seconds) {
-    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
-    final secs = (seconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$secs';
-  }
-
   @override
   void dispose() {
     _timer.cancel();
+    _otpController.dispose();
     super.dispose();
+  }
+
+  void _verifyOTP() async {
+    String enteredOTP = _otpController.text.trim();
+    print("Entered OTP: $enteredOTP");
+    print("Correct OTP: ${widget.correctOTP}");
+
+    if (enteredOTP == widget.correctOTP) {
+      // Show success message before navigating
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("OTP verified successfully! Redirecting..."),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2), // Show for 2 seconds
+        ),
+      );
+      // Wait for the snackbar to show before navigating
+      await Future.delayed(Duration(seconds: 2));
+      // Navigate to the profile screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CompanyProfile()),
+      );
+    } else {
+      // Show error message for incorrect OTP
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Incorrect OTP. Please try again."),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -49,9 +78,8 @@ class _VerificationCodeState extends State<Companyverficationcode> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Gradient Header
           Container(
-            height: 120, // Adjust height of the gradient area
+            height: 120,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -63,103 +91,36 @@ class _VerificationCodeState extends State<Companyverficationcode> {
               child: Text(
                 'Verification',
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
             ),
           ),
-          // Main Content
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Enter your',
-                    style: TextStyle(
-                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                        SizedBox(height: 4), // Reduced spacing here
-const Text(
-                    'Verification Code',
-                    style: TextStyle(
-                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
                   const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(6, (index) {
-                      return SizedBox(
-                        width: 40,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          maxLength: 1,
-                          style: const TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                            counterText: '',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                  TextField(
+                    controller: _otpController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    style: const TextStyle(fontSize: 20),
+                    decoration: InputDecoration(
+                      counterText: '',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      hintText: 'Enter OTP',
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _formatTime(_secondsRemaining),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'We sent a verification code to your email',
-                    style: TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                    Row(
-                      children: [
-                        const Text(
-                        'abc......@gmail.com.',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                                          ),
-     const Text(
-                        'You can check your',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                                          ),
-                      ],
-                    ),
- const Text(
-                        'inbox.',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                                          ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _secondsRemaining = 300;
-                        _startTimer();
-                      });
-                    },
-                    child: const Text(
-                      'I don\'t received the code? Send again',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
+                    "Time Remaining: ${(_secondsRemaining ~/ 60).toString().padLeft(2, '0')}:${(_secondsRemaining % 60).toString().padLeft(2, '0')}",
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
                   ),
                   const SizedBox(height: 40),
                   SizedBox(
@@ -168,25 +129,16 @@ const Text(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF001E62),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                            borderRadius: BorderRadius.circular(8)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onPressed: () {
-                            Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Companylogin(),
-                          ),
-                        );
-                      },
+                      onPressed: _verifyOTP,
                       child: const Text(
                         'Verify',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),

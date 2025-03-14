@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:accidentapp/User%20Side/Register.dart';
 import 'package:accidentapp/User%20Side/Verification.dart';
 import 'package:accidentapp/User%20Side/home_screen.dart';
+
+import 'Company Side/Tabbar.dart';
 
 class loginOnly extends StatefulWidget {
   const loginOnly({super.key});
@@ -33,16 +36,50 @@ class _LoginOnlyState extends State<loginOnly> {
       _isLoading = true;
     });
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      // Fetch user type from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users') // Assuming 'users' is your Firestore collection
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        String userType = userDoc['userType']; // Get the userType field
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login Successful!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate based on userType
+        if (userType == "User") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Hometab()),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("User data not found!"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Login Successful!"),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: Text("Login Failed: ${e.toString()}"),
+          backgroundColor: Colors.red,
         ),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

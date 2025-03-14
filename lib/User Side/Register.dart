@@ -1,9 +1,9 @@
+import 'package:accidentapp/Email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:accidentapp/Company%20Side/CompanyVerficationCode.dart';
 import 'package:accidentapp/Loginoonly.dart';
 import 'package:accidentapp/User%20Side/VerificationCode.dart';
-import 'package:accidentapp/Email_Verification.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -84,7 +84,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
       bool otpSent =
           await sendOTP(recipientEmail, generatedOtp); // ✅ Send the same OTP
-
       if (otpSent) {
         print("Stored OTP for verification: $generatedOtp"); // ✅ Debugging
 
@@ -103,8 +102,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  VerificationCode(correctOTP: generatedOtp), // ✅ Same OTP used
+              builder: (context) => userType == "User"
+                  ? VerificationCode(correctOTP: generatedOtp)
+                  : Companyverficationcode(correctOTP: generatedOtp),
             ),
           );
         });

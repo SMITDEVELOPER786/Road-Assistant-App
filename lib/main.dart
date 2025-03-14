@@ -1,8 +1,6 @@
 import 'package:accidentapp/SplashScreen.dart';
-import 'package:accidentapp/otp_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'Email_Verification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

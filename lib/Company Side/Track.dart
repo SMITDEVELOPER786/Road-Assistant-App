@@ -18,7 +18,7 @@ class Track extends StatelessWidget {
           ],
         ),
       ),
-    ); 
+    );
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -40,16 +40,16 @@ class Track extends StatelessWidget {
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
-              IconButton(
-                onPressed: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CompanyNotificationsScreen(),
-                      ),
-                    );
-                },
-                icon: Icon(Icons.notifications, color: Colors.black)),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CompanyNotificationsScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.notifications, color: Colors.black)),
         ],
       ),
     );
@@ -61,7 +61,8 @@ class Track extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Service Request List", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text("Service Request List",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           _serviceCard(isRequest: true),
         ],
@@ -75,7 +76,8 @@ class Track extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Service History", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text("Service History",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           _serviceCard(),
           _serviceCard(),
@@ -94,30 +96,41 @@ class Track extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Mr. Wesilewski", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("Mr. Wesilewski",
+                style: TextStyle(fontWeight: FontWeight.bold)),
             Text("Car | Toyota | Innova | Petrol | DL 01 MN 5632"),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             if (isRequest)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(onPressed: () {},    style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF001E62)),
-                child: Text("Done", style: TextStyle(color: Colors.white)),),
-                  ElevatedButton(onPressed: () {},    style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF001E62)),
-                child: Text("Locate client", style: TextStyle(color: Colors.white)),),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF001E62)),
+                    child: Text("Done", style: TextStyle(color: Colors.white)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF001E62)),
+                    child: Text("Locate client",
+                        style: TextStyle(color: Colors.white)),
+                  ),
                 ],
               )
             else
-              Text("Tue 7 Jun 11:21 AM", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Tue 7 Jun 11:21 AM",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
 
-   Widget _buildBottomButtons() {
+  Widget _buildBottomButtons() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(

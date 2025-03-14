@@ -11,14 +11,12 @@ class Hometab extends StatefulWidget {
 
 class _HometabState extends State<Hometab> {
   int _selectedIndex = 0; // Default selected index
-
   final List<Widget> _pages = [
     TowServiceScreen(),
     ServiceProvide(),
     Track(),
     PersonalIdentity()
   ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -48,12 +46,14 @@ class _HometabState extends State<Hometab> {
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(IconData icon, String label, int index) {
+  BottomNavigationBarItem _buildNavItem(
+      IconData icon, String label, int index) {
     return BottomNavigationBarItem(
       icon: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: _selectedIndex == index ? Color(0xFF001E62) : Colors.transparent,
+          color:
+              _selectedIndex == index ? Color(0xFF001E62) : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
@@ -69,7 +69,10 @@ class _HometabState extends State<Hometab> {
                 padding: EdgeInsets.only(left: 8),
                 child: Text(
                   label,
-                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
           ],
@@ -79,32 +82,36 @@ class _HometabState extends State<Hometab> {
     );
   }
 }
-  Widget _buildServiceCategory(String title, IconData icon) {
-    return Column(
+
+Widget _buildServiceCategory(String title, IconData icon) {
+  return Column(
+    children: [
+      Icon(icon, size: 40, color: Color(0xFF001E62)),
+      SizedBox(height: 5),
+      Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500))
+    ],
+  );
+}
+
+Widget _buildServiceTile(String title, IconData icon, bool selected) {
+  return Container(
+    decoration: BoxDecoration(
+      color: selected ? Color(0xFF001E62) : Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: Color(0xFF001E62), width: 1),
+    ),
+    padding: EdgeInsets.all(10),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 40, color: Color(0xFF001E62)),
+        Icon(icon,
+            size: 40, color: selected ? Colors.white : Color(0xFF001E62)),
         SizedBox(height: 5),
-        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500))
+        Text(title,
+            style: TextStyle(
+                color: selected ? Colors.white : Color(0xFF001E62),
+                fontWeight: FontWeight.bold))
       ],
-    );
-  }
-
-  Widget _buildServiceTile(String title, IconData icon, bool selected) {
-    return Container(
-      decoration: BoxDecoration(
-        color: selected ? Color(0xFF001E62) : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color(0xFF001E62), width: 1),
-      ),
-      padding: EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40, color: selected ? Colors.white : Color(0xFF001E62)),
-          SizedBox(height: 5),
-          Text(title, style: TextStyle(color: selected ? Colors.white : Color(0xFF001E62), fontWeight: FontWeight.bold))
-        ],
-      ),
-    );
-  }
-
+    ),
+  );
+}
